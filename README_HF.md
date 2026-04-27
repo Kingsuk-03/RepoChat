@@ -8,7 +8,7 @@ sdk_version: 1.39.0
 app_file: app.py
 pinned: false
 license: mit
-short_description: Chat with any GitHub repo. Cited answers, $0 cost.
+short_description: Chat with any GitHub repo. Cited AI answer.
 ---
 
 # RepoChat
