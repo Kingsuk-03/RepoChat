@@ -1,0 +1,16 @@
+.env
+.repochat_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+.idea/
+.vscode/
+*.log
+evals/results.md
+.DS_Store

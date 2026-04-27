@@ -1,0 +1,167 @@
+[
+  {
+    "repo": "https://github.com/tiangolo/fastapi",
+    "questions": [
+      {
+        "type": "project",
+        "q": "What does this project do?",
+        "expected_topics": ["web framework", "API", "Python", "ASGI"]
+      },
+      {
+        "type": "location",
+        "q": "Where is request validation handled?",
+        "expected_files": ["fastapi/dependencies", "fastapi/params"]
+      },
+      {
+        "type": "mechanism",
+        "q": "How does FastAPI parse path parameters?",
+        "expected_topics": ["path", "parameter", "type"]
+      },
+      {
+        "type": "location",
+        "q": "Where are the OpenAPI utilities defined?",
+        "expected_files": ["fastapi/openapi"]
+      },
+      {
+        "type": "mechanism",
+        "q": "How does dependency injection work in FastAPI?",
+        "expected_topics": ["Depends", "dependency", "callable"]
+      },
+      {
+        "type": "location",
+        "q": "Where is the APIRouter class defined?",
+        "expected_files": ["fastapi/routing.py"]
+      },
+      {
+        "type": "mechanism",
+        "q": "How does FastAPI handle background tasks?",
+        "expected_topics": ["BackgroundTasks", "background"]
+      },
+      {
+        "type": "location",
+        "q": "Where are security utilities like OAuth2 implemented?",
+        "expected_files": ["fastapi/security"]
+      },
+      {
+        "type": "project",
+        "q": "What async server does FastAPI run on?",
+        "expected_topics": ["ASGI", "Starlette", "uvicorn"]
+      },
+      {
+        "type": "refusal",
+        "q": "What is the airspeed velocity of an unladen swallow?",
+        "expected_refusal": true
+      }
+    ]
+  },
+  {
+    "repo": "https://github.com/psf/requests",
+    "questions": [
+      {
+        "type": "project",
+        "q": "What does this library do?",
+        "expected_topics": ["HTTP", "Python", "library", "requests"]
+      },
+      {
+        "type": "location",
+        "q": "Where is the Session class defined?",
+        "expected_files": ["requests/sessions.py"]
+      },
+      {
+        "type": "location",
+        "q": "Where are HTTP adapters implemented?",
+        "expected_files": ["requests/adapters.py"]
+      },
+      {
+        "type": "mechanism",
+        "q": "How does requests handle authentication?",
+        "expected_topics": ["auth", "HTTPBasicAuth", "AuthBase"]
+      },
+      {
+        "type": "location",
+        "q": "Where is cookie handling implemented?",
+        "expected_files": ["requests/cookies.py"]
+      },
+      {
+        "type": "mechanism",
+        "q": "How does requests handle SSL verification?",
+        "expected_topics": ["SSL", "verify", "certificate"]
+      },
+      {
+        "type": "location",
+        "q": "Where are exceptions defined?",
+        "expected_files": ["requests/exceptions.py"]
+      },
+      {
+        "type": "mechanism",
+        "q": "How are requests retried on failure?",
+        "expected_topics": ["retry", "Retry", "adapter"]
+      },
+      {
+        "type": "location",
+        "q": "Where is the main API like requests.get implemented?",
+        "expected_files": ["requests/api.py"]
+      },
+      {
+        "type": "refusal",
+        "q": "How do I bake a chocolate cake?",
+        "expected_refusal": true
+      }
+    ]
+  },
+  {
+    "repo": "https://github.com/expressjs/express",
+    "questions": [
+      {
+        "type": "project",
+        "q": "What does this project do?",
+        "expected_topics": ["Node.js", "web framework", "HTTP", "JavaScript"]
+      },
+      {
+        "type": "location",
+        "q": "Where is the Router defined?",
+        "expected_files": ["lib/router"]
+      },
+      {
+        "type": "location",
+        "q": "Where is the application factory defined?",
+        "expected_files": ["lib/express.js", "lib/application.js"]
+      },
+      {
+        "type": "mechanism",
+        "q": "How does Express handle middleware?",
+        "expected_topics": ["middleware", "next", "use"]
+      },
+      {
+        "type": "location",
+        "q": "Where is request parsing handled?",
+        "expected_files": ["lib/request"]
+      },
+      {
+        "type": "location",
+        "q": "Where is response handling implemented?",
+        "expected_files": ["lib/response"]
+      },
+      {
+        "type": "mechanism",
+        "q": "How does Express handle routing?",
+        "expected_topics": ["route", "method", "path"]
+      },
+      {
+        "type": "mechanism",
+        "q": "How does Express render views?",
+        "expected_topics": ["render", "view", "engine"]
+      },
+      {
+        "type": "location",
+        "q": "Where is utility code like merging params?",
+        "expected_files": ["lib/utils.js"]
+      },
+      {
+        "type": "refusal",
+        "q": "What's the weather in Tokyo today?",
+        "expected_refusal": true
+      }
+    ]
+  }
+]
