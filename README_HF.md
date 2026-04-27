@@ -3,12 +3,10 @@ title: RepoChat
 emoji: 🔍
 colorFrom: purple
 colorTo: pink
-sdk: streamlit
-sdk_version: 1.39.0
-app_file: app.py
+sdk: docker
 pinned: false
 license: mit
-short_description: Chat with any GitHub repo.
+short_description: Chat with any GitHub repo. Cited answers.
 ---
 
 # RepoChat
