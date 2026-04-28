@@ -799,9 +799,8 @@ if index_btn and url_input:
 # ---------------------------------------------------------------------------
 
 EXAMPLE_REPOS = [
-    ("tiangolo/fastapi", "Modern Python web framework"),
-    ("psf/requests", "HTTP for humans"),
-    ("expressjs/express", "Node.js web framework"),
+    ("https://github.com/mohamedsamara/mern-ecommerce", "E-Commerce Platform"),
+    ("https://github.com/Kingsuk-03/Dice_Game-PIG-", "Dice Game"),
 ]
 
 if not st.session_state.active_ref:

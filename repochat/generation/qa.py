@@ -82,6 +82,78 @@ def _load_cached_overview(ref: RepoRef, commit_sha: str) -> str | None:
     return None
 
 
+# Conversational pleasantries — "thanks", "great", "ok cool" — aren't questions
+# about the code at all. Without this short-circuit, retrieval finds nothing
+# meaningful and the model refuses with the unhelpful "couldn't find this in
+# the indexed code" message. We respond with a brief friendly reply instead.
+_CHITCHAT_PATTERNS = [
+    re.compile(p, re.IGNORECASE) for p in (
+        # Thanks variants
+        r"^\s*(thanks|thank you|thx|ty|cheers|much appreciated|appreciate(d| it))\s*[!.?]*\s*$",
+        r"^\s*(thanks|thank you|thx|ty)[,!]?\s+(a lot|so much|much|tons|loads|mate|buddy|man|friend)\s*[!.?]*\s*$",
+        # Acknowledgments / approval
+        r"^\s*(great|awesome|nice|cool|perfect|excellent|amazing|wonderful|fantastic|lovely|brilliant|sweet)\s*[!.?]*\s*$",
+        r"^\s*(good|ok|okay|alright|got it|gotcha|understood|makes sense|i see|got ya|ic)\s*[!.?]*\s*$",
+        r"^\s*(very (good|nice|cool|helpful)|works (great|well|perfectly)|that('s| is) (great|helpful|useful|perfect))\s*[!.?]*\s*$",
+        r"^\s*(makes sense|i understand|that helps|that helped|helpful)\s*[!.?]*\s*$",
+        # Greetings
+        r"^\s*(hi|hello|hey|yo|hiya|sup|howdy|greetings)\s*[!.?]*\s*$",
+        r"^\s*(good (morning|afternoon|evening|day))\s*[!.?]*\s*$",
+        # Goodbyes
+        r"^\s*(bye|goodbye|see (ya|you)( later)?|cya|later|farewell|take care)\s*[!.?]*\s*$",
+        # Affirmations
+        r"^\s*(yes|yep|yeah|yup|sure|right|correct|exactly|true|of course)\s*[!.?]*\s*$",
+        r"^\s*(no|nope|nah|not really|not quite)\s*[!.?]*\s*$",
+        # Compliments to the assistant
+        r"^\s*(you'?re (great|awesome|helpful|amazing|the best|cool))\s*[!.?]*\s*$",
+        r"^\s*(good (job|work|bot|answer))\s*[!.?]*\s*$",
+        r"^\s*(well done|nicely done|good one)\s*[!.?]*\s*$",
+    )
+]
+
+
+def _is_chitchat(q: str) -> bool:
+    """True if the message is a conversational pleasantry, not a code question."""
+    # Cap length: real questions get long; chitchat is almost always under 40 chars.
+    # This guards against a question that happens to start with a chitchat word.
+    if len(q.strip()) > 40:
+        return False
+    return any(p.match(q.strip()) for p in _CHITCHAT_PATTERNS)
+
+
+def _chitchat_reply(q: str) -> str:
+    """Pick a short, contextually appropriate reply for a chitchat message.
+
+    Uses simple keyword matching rather than the LLM to keep latency near zero
+    and avoid burning rate-limit slots on social niceties.
+    """
+    q_lower = q.strip().lower()
+
+    # Thanks family
+    if any(w in q_lower for w in ("thank", "thx", "ty", "cheers", "appreciate")):
+        return (
+            "You're welcome! Happy to help. Ask me anything else about this codebase — "
+            "I can explain how things work, find specific functions, or trace through logic."
+        )
+    # Goodbye family
+    if any(w in q_lower for w in ("bye", "later", "farewell", "see ya", "see you", "cya", "take care")):
+        return "See you later! The indexed repo will still be here when you come back."
+    # Greetings
+    if any(w in q_lower for w in ("hi", "hello", "hey", "yo", "hiya", "sup", "howdy", "greetings", "morning", "afternoon", "evening")):
+        return (
+            "Hi! I've indexed this repository and I'm ready to answer questions about it. "
+            "Try asking how something works, where a specific function lives, or what a particular module does."
+        )
+    # Compliments
+    if any(w in q_lower for w in ("you're", "youre", "good job", "good work", "good bot", "good answer", "well done", "nicely done")):
+        return "Thanks! Got another question about the code?"
+    # Approval / acknowledgment (great, nice, cool, ok, got it, etc.)
+    return (
+        "Glad that helped. What else would you like to know about the codebase? "
+        "You can ask about specific functions, classes, files, or how features are implemented."
+    )
+
+
 @dataclass
 class Citation:
     filepath: str
@@ -163,6 +235,13 @@ def answer_question(
     question: str,
 ) -> Answer:
     """Synchronous version. For streaming, use stream_answer below."""
+    # Short-circuit conversational pleasantries — "thanks", "great", "ok cool".
+    # These aren't questions about the code; retrieval would fail and the model
+    # would refuse with a confusing "couldn't find this in the indexed code"
+    # message. Return a brief friendly reply instead, without burning an LLM call.
+    if _is_chitchat(question):
+        return Answer(text=_chitchat_reply(question), sources=[], citations=[], refused=False)
+
     # Short-circuit project-level questions to the cached overview. These
     # questions don't have specific keywords retrieval can ground on, and the
     # overview was generated with full project context (README, manifests,
@@ -210,6 +289,19 @@ def stream_answer(
     Sources are returned eagerly so the UI can render the "Sources" expander
     before the answer finishes streaming.
     """
+    # Short-circuit conversational pleasantries. These are short by definition,
+    # so we just yield the whole reply as a single chunk — the UI's streaming
+    # loop handles single-chunk yields fine, and a 1-token "stream" still
+    # animates correctly.
+    if _is_chitchat(question):
+        reply = _chitchat_reply(question)
+        def _stream_chitchat() -> Iterator[str]:
+            # Word-by-word for a natural feel, even though the response is short.
+            for word in re.split(r"(\s+)", reply):
+                if word:
+                    yield word
+        return _stream_chitchat(), []
+
     # Short-circuit project-level questions to the cached overview. We yield
     # it in word-sized chunks so the UI's streaming loop still gets the
     # progressive-render feel even though no LLM call is happening.
