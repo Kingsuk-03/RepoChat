@@ -832,7 +832,7 @@ if not st.session_state.active_ref:
         '<span class="eyebrow">Try one of these</span>'
         + "".join(
             f'<div class="try-row">'
-            f'<span class="repo-slug">github.com/{slug}</span>'
+            f'<span class="repo-slug">{slug}</span>'
             f'<span class="repo-desc">{desc}</span>'
             f'</div>'
             for slug, desc in EXAMPLE_REPOS
